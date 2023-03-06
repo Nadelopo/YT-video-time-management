@@ -1,0 +1,40 @@
+.ytp-chapter-container {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.repeat__control__menu {
+  background: #202124;
+  width: min-content;
+  height: min-content;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+.repeat__control__menu__start {
+  all: unset;
+}
+.repeat__control__menu__end {
+  all: unset;
+}
+
+.repeat__control__menu input {
+  width: 30px;
+  height: 20px;
+  text-align: center;
+}
+
+.repeat__control__menu button {
+  background: #161616;
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  border: none;
+}
