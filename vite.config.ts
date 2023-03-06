@@ -11,7 +11,7 @@ export default defineConfig((config) => {
           name,
           version,
           description,
-          match: 'https://www.youtube.com/watch?v=rTbJ2qFd-Tc*',
+          match: 'https://www.youtube.com/watch?*',
           icon: 'https://www.google.com/s2/favicons?sz=64&domain=youtube.com'
         },
         server: {
