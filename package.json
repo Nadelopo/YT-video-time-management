@@ -1,7 +1,7 @@
 {
   "name": "yt-video-looping",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "yotube video looping app",
   "type": "module",
   "scripts": {
