@@ -15,13 +15,13 @@ const menu = el('div', '', { class: 'repeat__control__menu' })
 const inputStart = el('input', 'Hello RE:DOM!', {
   class: 'repeat__control__menu__start ',
   type: 'string',
-  value: '00 00',
+  value: '00:00',
   maxlength: 5
 })
 const inputEnd = el('input', 'Hello RE:DOM!', {
   class: 'repeat__control__menu__end ',
   type: 'string',
-  value: '00 00',
+  value: '00:00',
   maxlength: 5
 })
 
@@ -44,6 +44,7 @@ const slash = el('div', '/')
   setChildren(menu, [inputStart, slash, inputEnd, confirmBtn, cancelBtn])
 
   function onStateChange(state: number) {
+    console.log(timeStart, timeEnd)
     if (state == State.Playing) {
       interval = setInterval(() => {
         if (currentTime >= timeEnd) {
@@ -63,9 +64,9 @@ const slash = el('div', '/')
   }
 
   confirmBtn.onclick = () => {
-    const startSeconds = inputStart.value.split(' ')
+    const startSeconds = inputStart.value.split(':')
     timeStart = Number(startSeconds[0]) * 60 + Number(startSeconds[1])
-    const endSeconds = inputEnd.value.split(' ')
+    const endSeconds = inputEnd.value.split(':')
     timeEnd = Number(endSeconds[0]) * 60 + Number(endSeconds[1])
 
     if (!initial) {
@@ -95,7 +96,7 @@ const slash = el('div', '/')
   ) {
     if (e.target instanceof HTMLInputElement) {
       const value = e.target.value
-      if (value[2] != ' ') {
+      if (!value.includes(':')) {
         e.target.value = newValue
       } else {
         func(e.target.value)
