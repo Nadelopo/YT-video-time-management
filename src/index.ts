@@ -1,6 +1,9 @@
-import { el, mount, setChildren } from 'redom'
-import { waitForElm } from './waitForElm'
-import S from './styles.css?inline'
+import { waitForElm } from './utils/waitForElm'
+import { el, mount, RedomElementOfElQuery, setChildren, unmount } from 'redom'
+import settingsSVG from './icons/settings.svg'
+import { createSvg } from './utils/createSvg'
+import S from './styles.sass?inline'
+import { contentLoop, menuInput } from './components'
 GM_addStyle(S)
 
 enum State {
@@ -11,25 +14,64 @@ enum State {
   VideoCued
 }
 
-const menu = el('div', '', { class: 'repeat__control__menu' })
-const inputStart = el('input', 'Hello RE:DOM!', {
-  class: 'repeat__control__menu__start ',
-  type: 'string',
-  value: '00:00',
-  maxlength: 5
-})
-const inputEnd = el('input', 'Hello RE:DOM!', {
-  class: 'repeat__control__menu__end ',
-  type: 'string',
-  value: '00:00',
-  maxlength: 5
+const main = el('div', {
+  className: 'menu__root'
 })
 
-const confirmBtn = el('button', 'apply')
-const cancelBtn = el('button', 'cancel')
+const inputLoopStartSec = new menuInput().el
+const inputLoopStartMin = new menuInput().el
+const inputLoopEndSec = new menuInput().el
+const inputLoopEndMin = new menuInput().el
+const menu = el('div', {
+  className: 'content'
+})
 
-const slash = el('div', '/')
+const contentLoopStart = new contentLoop(
+  'start',
+  inputLoopStartMin,
+  inputLoopStartSec
+)
+const contentLoopEnd = new contentLoop('end', inputLoopEndMin, inputLoopEndSec)
 
+const applyBtn = el('button', 'apply', {
+  className: 'btn mt-8'
+})
+
+const cancelBtn = el('button', 'cancel', {
+  className: 'btn mt-8'
+})
+
+setChildren(menu, [
+  el('div', 'loop video time', {
+    className: 'mb-6'
+  }),
+  contentLoopStart,
+  contentLoopEnd,
+  applyBtn,
+  cancelBtn
+])
+
+let showMenu = true
+const settings = createSvg(settingsSVG, 'settings')
+
+const closeMenu = () => {
+  menu.classList.add('close')
+  setTimeout(() => {
+    unmount(main, menu)
+    menu.classList.remove('close')
+  }, 100)
+}
+
+settings.onclick = () => {
+  if (showMenu) {
+    mount(main, menu)
+  } else {
+    closeMenu()
+  }
+  showMenu = !showMenu
+}
+
+mount(main, settings)
 ;(async () => {
   let timeStart = 0 //200
   let timeEnd = 0 //396
@@ -40,14 +82,13 @@ const slash = el('div', '/')
   let player: any = await waitForElm('#ytd-player')
   const menuElement = await waitForElm('.item.style-scope.ytd-watch-metadata')
 
-  mount(menuElement, menu)
-  setChildren(menu, [inputStart, slash, inputEnd, confirmBtn, cancelBtn])
+  mount(menuElement, main)
 
   function onStateChange(state: number) {
-    console.log(timeStart, timeEnd)
+    console.log('change')
     if (state == State.Playing) {
       interval = setInterval(() => {
-        if (currentTime >= timeEnd) {
+        if (currentTime >= timeEnd || currentTime < timeStart) {
           clearInterval(interval)
           player.player_.seekTo(timeStart)
         }
@@ -63,12 +104,10 @@ const slash = el('div', '/')
     }
   }
 
-  confirmBtn.onclick = () => {
-    const startSeconds = inputStart.value.split(':')
-    timeStart = Number(startSeconds[0]) * 60 + Number(startSeconds[1])
-    const endSeconds = inputEnd.value.split(':')
-    timeEnd = Number(endSeconds[0]) * 60 + Number(endSeconds[1])
-
+  applyBtn.onclick = () => {
+    timeStart =
+      Number(inputLoopStartMin.value) * 60 + Number(inputLoopStartSec.value)
+    timeEnd = Number(inputLoopEndMin.value) * 60 + Number(inputLoopEndSec.value)
     if (!initial) {
       onStateChange(State.Playing)
       setTimeout(() => {
@@ -77,35 +116,9 @@ const slash = el('div', '/')
       initial = true
     }
   }
-
   cancelBtn.onclick = () => {
     clearInterval(interval)
     player.player_.removeEventListener('onStateChange', onStateChange)
     initial = false
   }
-
-  let previousStartValue = inputStart.value
-  const setPreviousStartValue = (value: string) => (previousStartValue = value)
-  let previousEndValue = inputEnd.value
-  const setPreviousEndValue = (value: string) => (previousEndValue = value)
-
-  function editInputValue(
-    e: Event,
-    newValue: string,
-    func: (...args: any) => void
-  ) {
-    if (e.target instanceof HTMLInputElement) {
-      const value = e.target.value
-      if (!value.includes(':')) {
-        e.target.value = newValue
-      } else {
-        func(e.target.value)
-      }
-    }
-  }
-
-  inputStart.oninput = (e) =>
-    editInputValue(e, previousStartValue, setPreviousStartValue)
-  inputEnd.oninput = (e) =>
-    editInputValue(e, previousEndValue, setPreviousEndValue)
 })()

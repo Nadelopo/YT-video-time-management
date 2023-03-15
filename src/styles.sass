@@ -1,0 +1,84 @@
+#owner
+  .menu__root
+    position: relative
+    margin-left: 10px
+    .settings
+      cursor: pointer
+      transition: .3s
+      user-select: none
+      &:hover
+        transform: rotate(180deg) scale(1.1)
+    .content
+      position: absolute
+      top: 0
+      left: 30px
+      background: #1c1c1c
+      border-radius: 8px
+      width: 240px
+      height: 260px
+      z-index: 100
+      animation: menuOpen 200ms
+      padding: 12px
+      box-sizing: border-box
+      font-size: 14px
+      &.close
+        animation: menuClose 100ms
+      .content__loop
+        display: grid
+        grid-template-columns: 60px auto 1fr auto 1fr
+        align-items: center
+        gap: 4px
+        .loop
+          display: flex
+          gap: 4px
+          align-items: center
+      input
+        margin: 4px 0
+        border: none
+        border-radius: 4px
+        background: #363636
+        color: #fff
+        outline: none
+        width: 24px
+        text-align: center
+        &::-webkit-inner-spin-button
+          -webkit-appearance: none
+          margin: 0
+
+@keyframes menuOpen
+  from
+    opacity: 0.6
+    transform: scale(0)
+  to
+    opacity: 1
+    transform: scale(1)
+
+@keyframes menuClose
+  from
+    opacity: 1
+    transform: scale(1)
+  to
+    opacity: 0.6
+    transform: scale(0)
+
+.mb-6
+  margin-bottom: 6px
+
+.mt-8
+  margin-top: 6px
+
+.btn
+  font-family: Roboto
+  font-size: 16px
+  cursor: pointer
+  border-radius: 10px
+  outline: none
+  color: #1c1c1c
+  background: #363636
+  padding: 2px 6px 1px 6px
+  transition: .4s
+  border: 2px solid #363636
+  width: 100%
+  color: #fff
+  &:hover
+    background: #1c1c1c
