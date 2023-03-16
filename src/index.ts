@@ -1,30 +1,11 @@
 import { el, mount, RedomElementOfElQuery, setChildren, unmount } from 'redom'
-import { contentTime, contentWrapperTime, menuInput } from './components'
+import { contentWrapperTime, menuInput } from './components'
 import { waitForElm } from './utils/waitForElm'
 import { createSvg } from './utils/createSvg'
 import settingsSVG from './icons/settings.svg'
+import { InputsSkipTime, TimeSkip, State } from './types'
 import S from './styles.sass?inline'
 GM_addStyle(S)
-
-enum State {
-  Ended,
-  Playing,
-  Paused,
-  Buffering,
-  VideoCued
-}
-
-interface InputsSkipTime {
-  inputSkipStartMin: HTMLInputElement
-  inputSkipStartSec: HTMLInputElement
-  inputSkipEndMin: HTMLInputElement
-  inputSkipEndSec: HTMLInputElement
-}
-
-interface TimeSkip {
-  timeSkipStart: number
-  timeSkipEnd: number
-}
 
 const main = el('div', {
   className: 'menu__root'
@@ -38,13 +19,6 @@ const menu = el('div', {
   className: 'content'
 })
 
-const contentLoopStart = new contentTime(
-  'start',
-  inputLoopStartMin,
-  inputLoopStartSec
-)
-const contentLoopEnd = new contentTime('end', inputLoopEndMin, inputLoopEndSec)
-
 const skipTimeInputs: InputsSkipTime[] = [
   {
     inputSkipStartMin: new menuInput().el,
@@ -54,19 +28,11 @@ const skipTimeInputs: InputsSkipTime[] = [
   }
 ]
 
-const contentSkipStart = new contentTime(
-  'start',
-  skipTimeInputs[0].inputSkipStartMin,
-  skipTimeInputs[0].inputSkipStartSec
-)
-const contentSkipEnd = new contentTime(
-  'end',
-  skipTimeInputs[0].inputSkipEndMin,
-  skipTimeInputs[0].inputSkipEndSec
-)
-
 const contentSkip = el('div', { className: 'content__skip' })
-mount(contentSkip, new contentWrapperTime(contentSkipStart, contentSkipEnd))
+mount(
+  contentSkip,
+  new contentWrapperTime({ inputsSkipTime: skipTimeInputs[0] })
+)
 
 const addTimeSkipBtn = el('button', 'add time skip', {
   className: 'btn mt-8',
@@ -77,19 +43,10 @@ const addTimeSkipBtn = el('button', 'add time skip', {
       inputSkipEndMin: new menuInput().el,
       inputSkipEndSec: new menuInput().el
     })
-    const newContentSkipStart = new contentTime(
-      'start',
-      skipTimeInputs.at(-1).inputSkipStartMin,
-      skipTimeInputs.at(-1).inputSkipStartSec
-    )
-    const newContentSkipEnd = new contentTime(
-      'end',
-      skipTimeInputs.at(-1).inputSkipEndMin,
-      skipTimeInputs.at(-1).inputSkipEndSec
-    )
+
     mount(
       contentSkip,
-      new contentWrapperTime(newContentSkipStart, newContentSkipEnd)
+      new contentWrapperTime({ inputsSkipTime: skipTimeInputs.at(-1) })
     )
   }
 })
@@ -102,11 +59,20 @@ const cancelBtn = el('button', 'cancel', {
   className: 'btn mt-8'
 })
 
+const contentLoopTime = new contentWrapperTime({
+  inputsLoopTime: {
+    inputLoopStartMin,
+    inputLoopStartSec,
+    inputLoopEndMin,
+    inputLoopEndSec
+  }
+})
+
 setChildren(menu, [
   el('div', 'loop time video', {
     className: 'mb-6'
   }),
-  new contentWrapperTime(contentLoopStart, contentLoopEnd),
+  contentLoopTime,
   el('hr'),
   el('div', 'skip time video', {
     className: 'mb-6'
@@ -117,12 +83,15 @@ setChildren(menu, [
   cancelBtn
 ])
 
+let showMenu = true
+
 const closeMenu = () => {
   menu.classList.add('close')
   setTimeout(() => {
     unmount(main, menu)
     menu.classList.remove('close')
   }, 100)
+  showMenu = true
 }
 
 let showMenu = true
@@ -131,6 +100,7 @@ const settings = createSvg(settingsSVG, 'settings')
 settings.onclick = () => {
   if (showMenu) {
     mount(main, menu)
+    showMenu = false
   } else {
     closeMenu()
   }

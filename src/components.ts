@@ -1,4 +1,15 @@
-import { el, setChildren, RedomElementOfElQuery } from 'redom'
+import { el, setChildren, RedomElementOfElQuery, mount } from 'redom'
+import { InputsSkipTime } from './types'
+
+interface ContentWrapperTime {
+  inputsSkipTime?: InputsSkipTime
+  inputsLoopTime?: {
+    inputLoopStartMin: HTMLInputElement
+    inputLoopStartSec: HTMLInputElement
+    inputLoopEndMin: HTMLInputElement
+    inputLoopEndSec: HTMLInputElement
+  }
+}
 
 export class menuInput {
   el: RedomElementOfElQuery<HTMLInputElement>
@@ -34,8 +45,33 @@ export class contentTime {
 
 export class contentWrapperTime {
   el: RedomElementOfElQuery<HTMLElement>
-  constructor(timeStart: contentTime, timeEnd: contentTime) {
+  constructor({ inputsSkipTime, inputsLoopTime }: ContentWrapperTime) {
     this.el = el('div', { className: 'content__wrapper__time' })
-    setChildren(this.el, [timeStart, timeEnd])
+    let contentStart: contentTime, contentEnd: contentTime
+    if (inputsSkipTime) {
+      contentStart = new contentTime(
+        'start',
+        inputsSkipTime.inputSkipStartMin,
+        inputsSkipTime.inputSkipStartSec
+      )
+      contentEnd = new contentTime(
+        'end',
+        inputsSkipTime.inputSkipEndMin,
+        inputsSkipTime.inputSkipEndSec
+      )
+    }
+    if (inputsLoopTime) {
+      contentStart = new contentTime(
+        'start',
+        inputsLoopTime.inputLoopStartMin,
+        inputsLoopTime.inputLoopStartSec
+      )
+      contentEnd = new contentTime(
+        'end',
+        inputsLoopTime.inputLoopEndMin,
+        inputsLoopTime.inputLoopEndSec
+      )
+    }
+    setChildren(this.el, [contentStart, contentEnd])
   }
 }
