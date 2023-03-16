@@ -1,5 +1,5 @@
 import { el, mount, RedomElementOfElQuery, setChildren, unmount } from 'redom'
-import { contentLoop, menuInput } from './components'
+import { contentTime, contentWrapperTime, menuInput } from './components'
 import { waitForElm } from './utils/waitForElm'
 import { createSvg } from './utils/createSvg'
 import settingsSVG from './icons/settings.svg'
@@ -14,6 +14,18 @@ enum State {
   VideoCued
 }
 
+interface InputsSkipTime {
+  inputSkipStartMin: HTMLInputElement
+  inputSkipStartSec: HTMLInputElement
+  inputSkipEndMin: HTMLInputElement
+  inputSkipEndSec: HTMLInputElement
+}
+
+interface TimeSkip {
+  timeSkipStart: number
+  timeSkipEnd: number
+}
+
 const main = el('div', {
   className: 'menu__root'
 })
@@ -26,24 +38,61 @@ const menu = el('div', {
   className: 'content'
 })
 
-const contentLoopStart = new contentLoop(
+const contentLoopStart = new contentTime(
   'start',
   inputLoopStartMin,
   inputLoopStartSec
 )
-const contentLoopEnd = new contentLoop('end', inputLoopEndMin, inputLoopEndSec)
+const contentLoopEnd = new contentTime('end', inputLoopEndMin, inputLoopEndSec)
 
-const inputSkipStartMin = new menuInput().el
-const inputSkipStartSec = new menuInput().el
-const inputSkipEndMin = new menuInput().el
-const inputSkipEndSec = new menuInput().el
+const skipTimeInputs: InputsSkipTime[] = [
+  {
+    inputSkipStartMin: new menuInput().el,
+    inputSkipStartSec: new menuInput().el,
+    inputSkipEndMin: new menuInput().el,
+    inputSkipEndSec: new menuInput().el
+  }
+]
 
-const contentSkipStart = new contentLoop(
+const contentSkipStart = new contentTime(
   'start',
-  inputSkipStartMin,
-  inputSkipStartSec
+  skipTimeInputs[0].inputSkipStartMin,
+  skipTimeInputs[0].inputSkipStartSec
 )
-const contentSkipEnd = new contentLoop('end', inputSkipEndMin, inputSkipEndSec)
+const contentSkipEnd = new contentTime(
+  'end',
+  skipTimeInputs[0].inputSkipEndMin,
+  skipTimeInputs[0].inputSkipEndSec
+)
+
+const contentSkip = el('div', { className: 'content__skip' })
+mount(contentSkip, new contentWrapperTime(contentSkipStart, contentSkipEnd))
+
+const addTimeSkipBtn = el('button', 'add time skip', {
+  className: 'btn mt-8',
+  onclick: () => {
+    skipTimeInputs.push({
+      inputSkipStartMin: new menuInput().el,
+      inputSkipStartSec: new menuInput().el,
+      inputSkipEndMin: new menuInput().el,
+      inputSkipEndSec: new menuInput().el
+    })
+    const newContentSkipStart = new contentTime(
+      'start',
+      skipTimeInputs.at(-1).inputSkipStartMin,
+      skipTimeInputs.at(-1).inputSkipStartSec
+    )
+    const newContentSkipEnd = new contentTime(
+      'end',
+      skipTimeInputs.at(-1).inputSkipEndMin,
+      skipTimeInputs.at(-1).inputSkipEndSec
+    )
+    mount(
+      contentSkip,
+      new contentWrapperTime(newContentSkipStart, newContentSkipEnd)
+    )
+  }
+})
 
 const applyBtn = el('button', 'apply', {
   className: 'btn mt-8'
@@ -57,14 +106,13 @@ setChildren(menu, [
   el('div', 'loop time video', {
     className: 'mb-6'
   }),
-  contentLoopStart,
-  contentLoopEnd,
+  new contentWrapperTime(contentLoopStart, contentLoopEnd),
   el('hr'),
   el('div', 'skip time video', {
     className: 'mb-6'
   }),
-  contentSkipStart,
-  contentSkipEnd,
+  contentSkip,
+  addTimeSkipBtn,
   applyBtn,
   cancelBtn
 ])
@@ -76,8 +124,6 @@ const closeMenu = () => {
     menu.classList.remove('close')
   }, 100)
 }
-
-mount(main, menu)
 
 let showMenu = true
 const settings = createSvg(settingsSVG, 'settings')
@@ -95,8 +141,7 @@ mount(main, settings)
 ;(async () => {
   let timeLoopStart = 0
   let timeLoopEnd = 0
-  let timeSkipStart = 0
-  let timeSkipEnd = 0
+  const timeSkip: TimeSkip[] = []
   let currentTime = 0
   let interval = 0
   let initial = false
@@ -109,7 +154,6 @@ mount(main, settings)
   function onStateChange(state: number) {
     if (state === State.Playing) {
       interval = setInterval(() => {
-        console.log('interval')
         if (
           (timeLoopEnd && currentTime >= timeLoopEnd) ||
           currentTime < timeLoopStart
@@ -117,14 +161,17 @@ mount(main, settings)
           clearInterval(interval)
           player.player_.seekTo(timeLoopStart)
         }
-        if (
-          timeSkipEnd &&
-          currentTime >= timeSkipStart &&
-          currentTime < timeSkipEnd
-        ) {
-          clearInterval(interval)
-          player.player_.seekTo(timeSkipEnd)
-        }
+        timeSkip.forEach((time) => {
+          if (
+            time.timeSkipEnd &&
+            currentTime >= time.timeSkipStart &&
+            currentTime < time.timeSkipEnd
+          ) {
+            clearInterval(interval)
+            player.player_.seekTo(time.timeSkipEnd)
+          }
+        })
+
         currentTime = player.player_.getCurrentTime()
       }, 1000)
     }
@@ -142,10 +189,17 @@ mount(main, settings)
       Number(inputLoopStartMin.value) * 60 + Number(inputLoopStartSec.value)
     timeLoopEnd =
       Number(inputLoopEndMin.value) * 60 + Number(inputLoopEndSec.value)
-    timeSkipStart =
-      Number(inputSkipStartMin.value) * 60 + Number(inputSkipStartSec.value)
-    timeSkipEnd =
-      Number(inputSkipEndMin.value) * 60 + Number(inputSkipEndSec.value)
+
+    skipTimeInputs.forEach((time) => {
+      timeSkip.push({
+        timeSkipStart:
+          Number(time.inputSkipStartMin.value) * 60 +
+          Number(time.inputSkipStartSec.value),
+        timeSkipEnd:
+          Number(time.inputSkipEndMin.value) * 60 +
+          Number(time.inputSkipEndSec.value)
+      })
+    })
 
     if (!initial) {
       onStateChange(State.Playing)

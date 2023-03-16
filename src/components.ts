@@ -14,14 +14,14 @@ export class menuInput {
   }
 }
 
-export class contentLoop {
+export class contentTime {
   el: RedomElementOfElQuery<HTMLElement>
   constructor(
     title: string,
     inputStart: HTMLInputElement,
     inputEnd: HTMLInputElement
   ) {
-    this.el = el('div', { className: 'content__loop' })
+    this.el = el('div', { className: 'content__time' })
     setChildren(this.el, [
       el('div', title + ':'),
       el('div', 'min.'),
@@ -29,5 +29,13 @@ export class contentLoop {
       el('div', 'sec.'),
       inputEnd
     ])
+  }
+}
+
+export class contentWrapperTime {
+  el: RedomElementOfElQuery<HTMLElement>
+  constructor(timeStart: contentTime, timeEnd: contentTime) {
+    this.el = el('div', { className: 'content__wrapper__time' })
+    setChildren(this.el, [timeStart, timeEnd])
   }
 }

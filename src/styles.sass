@@ -15,23 +15,35 @@
       background: #1c1c1c
       border-radius: 8px
       width: 240px
-      height: 260px
+      height: 290px
       z-index: 100
       animation: menuOpen 200ms
       padding: 12px
       box-sizing: border-box
       font-size: 14px
+      overflow: auto
       &.close
         animation: menuClose 100ms
-      .content__loop
-        display: grid
-        grid-template-columns: 60px auto 1fr auto 1fr
-        align-items: center
-        gap: 4px
-        .loop
-          display: flex
-          gap: 4px
+      &::-webkit-scrollbar
+        width: 8px
+      &::-webkit-scrollbar-track
+        background-color: #1c1c1c
+        border-radius: 0 0 8px 0
+      &::-webkit-scrollbar-thumb
+        background: #7b7b7b
+        border-radius: 10px
+        transform: matrix(1, 0, 0, -1, 0, 0)
+      .content__wrapper__time
+        margin-bottom: 6px
+        .content__time
+          display: grid
+          grid-template-columns: 60px auto 1fr auto 1fr
           align-items: center
+          gap: 4px
+          .loop
+            display: flex
+            gap: 4px
+            align-items: center
       input
         margin: 4px 0
         border: none
