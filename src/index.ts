@@ -92,19 +92,19 @@ const closeMenu = () => {
     menu.classList.remove('close')
   }, 100)
   showMenu = true
+  window.removeEventListener('click', onClickOutside)
 }
 
-let showMenu = true
 const settings = createSvg(settingsSVG, 'settings')
 
 settings.onclick = () => {
   if (showMenu) {
     mount(main, menu)
+    window.addEventListener('click', onClickOutside)
     showMenu = false
   } else {
     closeMenu()
   }
-  showMenu = !showMenu
 }
 
 mount(main, settings)
@@ -118,7 +118,6 @@ mount(main, settings)
 
   let player: any = await waitForElm('#ytd-player')
   const menuElement = await waitForElm('.item.style-scope.ytd-watch-metadata')
-
   mount(menuElement, main)
 
   function onStateChange(state: number) {
@@ -186,3 +185,12 @@ mount(main, settings)
     initial = false
   }
 })()
+
+// on click outside close menu
+const onClickOutside = (e: MouseEvent) => {
+  if (!e.composedPath().includes(main)) {
+    closeMenu()
+  }
+}
+
+window.addEventListener('click', onClickOutside)
