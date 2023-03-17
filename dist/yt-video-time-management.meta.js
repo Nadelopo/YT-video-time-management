@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        yt-video-time-management
-// @version     1.1.2
+// @version     1.1.3
 // @description extension for video time management
 // @match       https://www.youtube.com/watch?*
 // @icon        https://www.google.com/s2/favicons?sz=64&domain=youtube.com

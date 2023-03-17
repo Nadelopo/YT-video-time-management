@@ -51,6 +51,17 @@ const addTimeSkipBtn = el('button', 'add time skip', {
   }
 })
 
+const removeTimeSkipBtn = el('button', 'remove time skip', {
+  className: 'btn mt-8',
+  onclick: () => {
+    if (contentSkip.children.length > 1) {
+      const lastTimeSkipBlock = [...contentSkip.children].at(-1)
+      lastTimeSkipBlock.remove()
+      skipTimeInputs.splice(-1)
+    }
+  }
+})
+
 const applyBtn = el('button', 'apply', {
   className: 'btn mt-8'
 })
@@ -79,6 +90,7 @@ setChildren(menu, [
   }),
   contentSkip,
   addTimeSkipBtn,
+  removeTimeSkipBtn,
   applyBtn,
   cancelBtn
 ])
@@ -111,7 +123,7 @@ mount(main, settings)
 ;(async () => {
   let timeLoopStart = 0
   let timeLoopEnd = 0
-  const timeSkip: TimeSkip[] = []
+  let timeSkip: TimeSkip[] = []
   let currentTime = 0
   let interval = 0
   let initial = false
@@ -158,9 +170,9 @@ mount(main, settings)
       Number(inputLoopStartMin.value) * 60 + Number(inputLoopStartSec.value)
     timeLoopEnd =
       Number(inputLoopEndMin.value) * 60 + Number(inputLoopEndSec.value)
-
+    const newTimeSkip: TimeSkip[] = []
     skipTimeInputs.forEach((time) => {
-      timeSkip.push({
+      newTimeSkip.push({
         timeSkipStart:
           Number(time.inputSkipStartMin.value) * 60 +
           Number(time.inputSkipStartSec.value),
@@ -169,6 +181,7 @@ mount(main, settings)
           Number(time.inputSkipEndSec.value)
       })
     })
+    timeSkip = newTimeSkip
 
     if (!initial) {
       onStateChange(State.Playing)
@@ -186,7 +199,6 @@ mount(main, settings)
   }
 })()
 
-// on click outside close menu
 const onClickOutside = (e: MouseEvent) => {
   if (!e.composedPath().includes(main)) {
     closeMenu()
