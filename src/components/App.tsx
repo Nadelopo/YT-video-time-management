@@ -1,11 +1,12 @@
 import { createSignal, Show, onMount, type Component } from 'solid-js'
 import { createMutable } from 'solid-js/store'
 import { Menu } from './Menu'
+import { StorageTime } from './types'
 
 const [isMenuOpen, setIsMenuOpen] = createSignal(false)
 const [stateClass, setStateClass] = createSignal('open')
 
-export let timeStore = createMutable({
+export const timeStore = createMutable({
   loopTime: {
     start: 0,
     end: 0
@@ -28,11 +29,18 @@ export const App: Component = () => {
   }
 
   onMount(() => {
-    const timeStorage = localStorage.getItem('yt-time')
-    if (timeStorage) {
-      const timeStorageFormatted = JSON.parse(timeStorage)
-      timeStore.loopTime = timeStorageFormatted.loopTime
-      timeStore.skipTime = timeStorageFormatted.skipTime
+    const searchParams = new URLSearchParams(window.location.search)
+    const videoId = searchParams.get('v')
+    const storageData = localStorage.getItem('yt-time')
+
+    if (storageData) {
+      const parsed: StorageTime[] = JSON.parse(storageData)
+      const findedStore = parsed.find((e) => e.id === videoId)
+      if (findedStore) {
+        const { loopTime, skipTime } = findedStore.time
+        timeStore.loopTime = loopTime
+        timeStore.skipTime = skipTime
+      }
     }
   })
 

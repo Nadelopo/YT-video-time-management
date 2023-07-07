@@ -54,6 +54,7 @@ export const Skip: Component<Props> = (props: Props) => {
 
   const clear = () => {
     timeStore.skipTime = timeStore.skipTime.map(() => ({ start: 0, end: 0 }))
+    skipRef().forEach((e) => e.clearValues())
   }
 
   return (

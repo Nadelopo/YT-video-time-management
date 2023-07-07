@@ -19,7 +19,7 @@ export const Inputs: Component<Props> = (props: Props) => {
     setSec
   })
 
-  createEffect(() => {
+  onMount(() => {
     setMin(Math.floor(props.time / 60))
     setSec(props.time % 60)
   })

@@ -15,8 +15,8 @@ export const ContentTime: Component<Props> = (props: Props) => {
   let endTime: InputRef | undefined
 
   const checkInputsValues = () => {
-    if (!startTime) return
-    if (!endTime) return
+    if (!startTime || !endTime) return
+
     if (endTime.allTime() < startTime.allTime()) {
       endTime.setSec(startTime.sec())
     }
@@ -30,7 +30,14 @@ export const ContentTime: Component<Props> = (props: Props) => {
     props.ref({
       startTime: startTime.allTime,
       endTime: endTime.allTime,
-      checkInputsValues
+      checkInputsValues,
+      clearValues: () => {
+        if (!startTime || !endTime) return
+        startTime.setMin(0)
+        startTime.setSec(0)
+        endTime.setMin(0)
+        endTime.setSec(0)
+      }
     })
   })
 

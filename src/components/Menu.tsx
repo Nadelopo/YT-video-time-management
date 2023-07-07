@@ -3,7 +3,7 @@ import { Switcher } from './Switcher'
 import { timeStore } from './App'
 import { Loop } from './Loop'
 import { Skip } from './Skip'
-import { TimeLoopRef, Player, TimeSkipRef } from './types'
+import { TimeLoopRef, Player, TimeSkipRef, StorageTime } from './types'
 
 type SkipTime = { start: number; end: number }
 
@@ -26,12 +26,37 @@ export const Menu: Component = () => {
     }, 500)
   })
 
+  const setTimeInLocalStorage = () => {
+    const storageData = localStorage.getItem('yt-time')
+    let storageTime: StorageTime[] = JSON.parse(storageData || '[]')
+
+    const searchParams = new URLSearchParams(window.location.search)
+    const videoId = searchParams.get('v')
+    if (videoId) {
+      if (storageTime.some((e) => e.id === videoId)) {
+        storageTime = storageTime.map((e) =>
+          e.id === videoId ? { ...e, time: timeStore } : e
+        )
+      } else {
+        storageTime = [
+          ...storageTime,
+          {
+            id: videoId,
+            time: timeStore
+          }
+        ]
+      }
+      localStorage.setItem('yt-time', JSON.stringify(storageTime))
+    }
+  }
+
   const setTimeInStore = () => {
     const loopTimeStart = loopRef?.startTime() || 0
     const loopTimeEnd = loopRef?.endTime() || 0
     const skipTime: SkipTime[] = []
     if (loopRef) {
       loopRef.checkInputsValues()
+
       timeStore.loopTime = {
         start: loopTimeStart,
         end: loopTimeEnd
@@ -49,8 +74,7 @@ export const Menu: Component = () => {
 
       timeStore.skipTime = skipTime
     }
-
-    localStorage.setItem('yt-time', JSON.stringify(timeStore))
+    setTimeInLocalStorage()
     return { loopTimeStart, loopTimeEnd, skipTime }
   }
 

@@ -17,6 +17,7 @@ export type TimeRef = {
   startTime: () => number
   endTime: () => number
   checkInputsValues: () => void
+  clearValues: () => void
 }
 
 export type TimeLoopRef = {
@@ -36,4 +37,18 @@ export type TimeSkipRef = {
       end: number
     }[]
   ) => void
+}
+
+export type StorageTime = {
+  id: string
+  time: {
+    loopTime: {
+      start: number
+      end: number
+    }
+    skipTime: {
+      start: number
+      end: number
+    }[]
+  }
 }
