@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "strict": true,
     "target": "ESNext",
-    "moduleResolution":"node",
-    "types": [
-      "vite-userscript-plugin/types/tampermonkey"
-    ]
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "noEmit": true,
+    "isolatedModules": true,
+    "types": ["vite-userscript-plugin/types/tampermonkey"]
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["./src/components/trash"]
 }
