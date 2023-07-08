@@ -23,8 +23,8 @@ devDependencies:
     specifier: ^4.3.9
     version: 4.3.9(sass@1.63.4)
   vite-userscript-plugin:
-    specifier: ^1.8.1
-    version: 1.8.1(vite@4.3.9)
+    specifier: ^1.8.0
+    version: 1.8.0(vite@4.3.9)
 
 packages:
 
@@ -1212,8 +1212,8 @@ packages:
       - supports-color
     dev: false
 
-  /vite-userscript-plugin@1.8.1(vite@4.3.9):
-    resolution: {integrity: sha512-GHSUk4CyqwOdvCiNBriFDXcQ44noYktV6+KigUXwAqoCB/6JGFteKQaspiWcEnlGWnj+C1P5NSRvE5Z3BtAQkw==}
+  /vite-userscript-plugin@1.8.0(vite@4.3.9):
+    resolution: {integrity: sha512-Go87A4Kj7vCT4txNTW236EF45s3pGXJFSjzhAYB0jlACny/lolbOj5A3kwJJzqTiKP0dGTmQ8NleS/yMgnlMSg==}
     peerDependencies:
       vite: '>=3.0.0'
     dependencies:
