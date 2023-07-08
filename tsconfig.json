@@ -12,6 +12,5 @@
     "isolatedModules": true,
     "types": ["vite-userscript-plugin/types/tampermonkey"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["./src/components/trash"]
+  "include": ["src/**/*"]
 }
