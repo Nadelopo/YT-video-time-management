@@ -1,13 +1,12 @@
 import { Component, createSignal, onMount } from 'solid-js'
 import { Switcher } from './Switcher'
-import { timeStore } from './App'
+import { timeStore, setVideoInterval, interval } from './App'
 import { Loop } from './Loop'
 import { Skip } from './Skip'
 import { TimeLoopRef, Player, TimeSkipRef, StorageTime } from './types'
 
 type SkipTime = { start: number; end: number }
 
-let interval = 0
 export const Menu: Component = () => {
   const [isVideoLoopingActive, setIsVideoLoopingActive] = createSignal(true)
 
@@ -84,19 +83,21 @@ export const Menu: Component = () => {
 
     const { loopTimeStart, loopTimeEnd, skipTime } = setTimeInStore()
 
-    clearInterval(interval)
-    interval = setInterval(() => {
-      if (isVideoLoopingActiveValue) {
-        loopRef?.apply(loopTimeStart, loopTimeEnd)
-      } else {
-        skipRef?.apply(skipTime)
-      }
-    }, 1000)
+    clearInterval(interval())
+    setVideoInterval(
+      setInterval(() => {
+        if (isVideoLoopingActiveValue) {
+          loopRef?.apply(loopTimeStart, loopTimeEnd)
+        } else {
+          skipRef?.apply(skipTime)
+        }
+      }, 1000)
+    )
   }
 
   const cancel = () => {
-    clearInterval(interval)
-    interval = 0
+    clearInterval(interval())
+    setVideoInterval(0)
   }
 
   const switchComponent = (state: boolean) => {

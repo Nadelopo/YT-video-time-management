@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, onMount } from 'solid-js'
+import { Component, createSignal, onMount } from 'solid-js'
 import { InputRef } from './types'
 
 type Props = {

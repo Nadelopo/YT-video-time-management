@@ -6,7 +6,5 @@ import S from './styles.sass?inline'
 GM_addStyle(S)
 
 waitElement({ selector: '#owner' }).then((parentContainer) => {
-  console.log(parentContainer)
-
   render(() => <App />, parentContainer)
 })

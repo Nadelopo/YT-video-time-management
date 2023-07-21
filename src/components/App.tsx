@@ -1,10 +1,13 @@
-import { createSignal, Show, onMount, type Component } from 'solid-js'
+import { createSignal, Show, type Component, createEffect } from 'solid-js'
 import { createMutable } from 'solid-js/store'
+import { watchUrl } from '../utils/watchUrl'
 import { Menu } from './Menu'
 import { StorageTime } from './types'
 
+export const [interval, setVideoInterval] = createSignal(0)
 const [isMenuOpen, setIsMenuOpen] = createSignal(false)
 const [stateClass, setStateClass] = createSignal('open')
+let menuRef: HTMLDivElement | null = null
 
 export const timeStore = createMutable({
   loopTime: {
@@ -19,6 +22,36 @@ export const timeStore = createMutable({
   ]
 })
 
+watchUrl(({ url }) => {
+  clearInterval(interval())
+  setVideoInterval(0)
+  timeStore.loopTime = {
+    start: 0,
+    end: 0
+  }
+  timeStore.skipTime = [
+    {
+      start: 0,
+      end: 0
+    }
+  ]
+  setIsMenuOpen(false)
+  const search = url.split('?')[1]
+  const searchParams = new URLSearchParams(search)
+  const videoId = searchParams.get('v')
+  const storageData = localStorage.getItem('yt-time')
+
+  if (storageData) {
+    const parsed: StorageTime[] = JSON.parse(storageData)
+    const findedStore = parsed.find((e) => e.id === videoId)
+    if (findedStore) {
+      const { loopTime, skipTime } = findedStore.time
+      timeStore.loopTime = loopTime
+      timeStore.skipTime = skipTime
+    }
+  }
+})
+
 export const App: Component = () => {
   const onSettingsClick = () => {
     setStateClass('close')
@@ -28,24 +61,22 @@ export const App: Component = () => {
     }, 100)
   }
 
-  onMount(() => {
-    const searchParams = new URLSearchParams(window.location.search)
-    const videoId = searchParams.get('v')
-    const storageData = localStorage.getItem('yt-time')
+  const onClickOutside = (e: Event) => {
+    if (menuRef && !e.composedPath().includes(menuRef)) {
+      onSettingsClick()
+    }
+  }
 
-    if (storageData) {
-      const parsed: StorageTime[] = JSON.parse(storageData)
-      const findedStore = parsed.find((e) => e.id === videoId)
-      if (findedStore) {
-        const { loopTime, skipTime } = findedStore.time
-        timeStore.loopTime = loopTime
-        timeStore.skipTime = skipTime
-      }
+  createEffect(() => {
+    if (isMenuOpen()) {
+      window.addEventListener('click', onClickOutside)
+    } else {
+      window.removeEventListener('click', onClickOutside)
     }
   })
 
   return (
-    <div class="menu__root">
+    <div class="menu__root" ref={menuRef!}>
       <svg
         class="settings"
         xmlns="http://www.w3.org/2000/svg"
