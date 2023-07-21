@@ -1,7 +1,7 @@
 {
   "name": "yt-video-time-management",
   "private": true,
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "extension for video time management",
   "type": "module",
   "scripts": {
