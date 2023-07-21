@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@zero-dependency/dom':
+    specifier: ^1.8.4
+    version: 1.8.4
   solid-js:
     specifier: ^1.7.6
     version: 1.7.6
@@ -607,6 +610,12 @@ packages:
     resolution: {integrity: sha512-MitHFXnhtgwsGZWtT68URpOvLN4EREih1u3QtQiN4VdAxWKRVvGCSvw/Qth0M0Qq3pJpnGOu5JaM/ydK7OGbqg==}
     dependencies:
       '@babel/types': 7.22.5
+    dev: false
+
+  /@zero-dependency/dom@1.8.4:
+    resolution: {integrity: sha512-k+u4ypnqz30ENCSW1KKLsIttF/GTHf/ZkPwHMZejXs5pYHXyj21qCazkFY0ohwKG6Rq/1uXz7PcwCfoUuxZ9DA==}
+    dependencies:
+      csstype: 3.1.2
     dev: false
 
   /ansi-styles@3.2.1:
