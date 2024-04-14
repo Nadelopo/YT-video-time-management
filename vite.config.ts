@@ -2,6 +2,20 @@ import { defineConfig } from 'vite'
 import Userscript from 'vite-userscript-plugin'
 import solidPlugin from 'vite-plugin-solid'
 import { name, version, description } from './package.json'
+import { copyFileSync, existsSync, mkdirSync } from 'fs'
+import { resolve } from 'path'
+
+const sourcePath = resolve(__dirname, 'dist/yt-video-time-management.user.js')
+if (existsSync(sourcePath)) {
+  const destDir = resolve(__dirname, '')
+  if (!existsSync(destDir)) {
+    mkdirSync(destDir)
+  }
+  const destPath = resolve(destDir, 'yt-video-time-management.user.js')
+  copyFileSync(sourcePath, destPath)
+} else {
+  console.error('Source file tsconfig.json does not exist.')
+}
 
 export default defineConfig({
   plugins: [
