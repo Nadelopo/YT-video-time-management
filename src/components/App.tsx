@@ -76,7 +76,10 @@ export const App: Component = () => {
   })
 
   return (
-    <div class="menu__root" ref={menuRef!}>
+    <div
+      class="menu__root"
+      ref={menuRef!}
+    >
       <svg
         class="settings"
         xmlns="http://www.w3.org/2000/svg"

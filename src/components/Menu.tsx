@@ -20,7 +20,7 @@ export const Menu: Component = () => {
     setTimeout(() => {
       if (playerElement) {
         //@ts-ignore
-        setPlayer(playerElement.player_)
+        setPlayer(playerElement.getPlayer())
       }
     }, 500)
   })
@@ -79,6 +79,7 @@ export const Menu: Component = () => {
 
   const apply = () => {
     if (!player()) return
+
     const isVideoLoopingActiveValue = isVideoLoopingActive()
 
     const { loopTimeStart, loopTimeEnd, skipTime } = setTimeInStore()
@@ -107,16 +108,31 @@ export const Menu: Component = () => {
 
   return (
     <>
-      <Switcher state={isVideoLoopingActive()} setState={switchComponent} />
+      <Switcher
+        state={isVideoLoopingActive()}
+        setState={switchComponent}
+      />
       {isVideoLoopingActive() ? (
-        <Loop ref={(e: TimeLoopRef) => (loopRef = e)} player={player} />
+        <Loop
+          ref={(e: TimeLoopRef) => (loopRef = e)}
+          player={player}
+        />
       ) : (
-        <Skip ref={(e: TimeSkipRef) => (skipRef = e)} player={player} />
+        <Skip
+          ref={(e: TimeSkipRef) => (skipRef = e)}
+          player={player}
+        />
       )}
-      <button class="btn mt-8" onclick={apply}>
+      <button
+        class="btn mt-8"
+        onclick={apply}
+      >
         apply
       </button>
-      <button class="btn mt-8" onClick={cancel}>
+      <button
+        class="btn mt-8"
+        onClick={cancel}
+      >
         cancel
       </button>
     </>
