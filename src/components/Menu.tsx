@@ -1,5 +1,5 @@
-import { Component, createSignal, onMount } from 'solid-js'
-import { Switcher } from './Switcher'
+import { Accessor, Component, createSignal, onMount } from 'solid-js'
+import { Switcher } from './Switcher/Switcher'
 import { timeStore, setVideoInterval, interval } from './App'
 import { Loop } from './Loop'
 import { Skip } from './Skip'
@@ -7,7 +7,9 @@ import { TimeLoopRef, Player, TimeSkipRef, StorageTime } from './types'
 
 type SkipTime = { start: number; end: number }
 
-export const Menu: Component = () => {
+export const Menu: Component<{ chapters: Accessor<string[]> }> = ({
+  chapters
+}) => {
   const [isVideoLoopingActive, setIsVideoLoopingActive] = createSignal(true)
 
   const playerElement = document.querySelector('#ytd-player')
@@ -83,12 +85,13 @@ export const Menu: Component = () => {
     const isVideoLoopingActiveValue = isVideoLoopingActive()
 
     const { loopTimeStart, loopTimeEnd, skipTime } = setTimeInStore()
+    console.log(loopTimeStart, loopTimeEnd, skipTime)
 
     clearInterval(interval())
     setVideoInterval(
       setInterval(() => {
         if (isVideoLoopingActiveValue) {
-          loopRef?.apply(loopTimeStart, loopTimeEnd)
+          loopRef?.apply(timeStore.loopTime.start, timeStore.loopTime.end)
         } else {
           skipRef?.apply(skipTime)
         }
@@ -116,6 +119,7 @@ export const Menu: Component = () => {
         <Loop
           ref={(e: TimeLoopRef) => (loopRef = e)}
           player={player}
+          chapters={chapters}
         />
       ) : (
         <Skip

@@ -3,6 +3,7 @@ import { createMutable } from 'solid-js/store'
 import { watchUrl } from '../utils/watchUrl'
 import { Menu } from './Menu'
 import { StorageTime } from './types'
+import { parseChapters } from '../utils/parseChapters'
 
 export const [interval, setVideoInterval] = createSignal(0)
 const [isMenuOpen, setIsMenuOpen] = createSignal(false)
@@ -22,7 +23,7 @@ export const timeStore = createMutable({
   ]
 })
 
-watchUrl(({ url }) => {
+watchUrl(async ({ url }) => {
   clearInterval(interval())
   setVideoInterval(0)
   timeStore.loopTime = {
@@ -41,19 +42,36 @@ watchUrl(({ url }) => {
   const videoId = searchParams.get('v')
   const storageData = localStorage.getItem('yt-time')
 
-  if (storageData) {
-    const parsed: StorageTime[] = JSON.parse(storageData)
-    const findedStore = parsed.find((e) => e.id === videoId)
-    if (findedStore) {
-      const { loopTime, skipTime } = findedStore.time
-      timeStore.loopTime = loopTime
-      timeStore.skipTime = skipTime
-    }
-  }
+  if (!storageData) return
+
+  const parsed: StorageTime[] = JSON.parse(storageData)
+  const findedStore = parsed.find((e) => e.id === videoId)
+
+  if (!findedStore) return
+
+  const { loopTime, skipTime } = findedStore.time
+  timeStore.loopTime = loopTime
+  timeStore.skipTime = skipTime
 })
 
+const [chapters, setChapters] = createSignal<string[]>([])
 export const App: Component = () => {
   const onSettingsClick = () => {
+    if (!chapters().length) {
+      document
+        .querySelector<HTMLButtonElement>('#description  #expand')
+        ?.click()
+      requestAnimationFrame(() => {
+        const descriptionText = document
+          .querySelector('#bottom-row')
+          ?.querySelector('#description')?.textContent
+        const data = parseChapters(descriptionText ?? '')
+        if (data) {
+          setChapters(data.map((e) => e.timestamp))
+        }
+      })
+    }
+
     setStateClass('close')
     setTimeout(() => {
       setIsMenuOpen(!isMenuOpen())
@@ -69,9 +87,9 @@ export const App: Component = () => {
 
   createEffect(() => {
     if (isMenuOpen()) {
-      window.addEventListener('click', onClickOutside)
+      window.addEventListener('mousedown', onClickOutside)
     } else {
-      window.removeEventListener('click', onClickOutside)
+      window.removeEventListener('mousedown', onClickOutside)
     }
   })
 
@@ -93,7 +111,7 @@ export const App: Component = () => {
       </svg>
       <Show when={isMenuOpen()}>
         <div class={`content ${stateClass()}`}>
-          <Menu />
+          <Menu chapters={chapters} />
         </div>
       </Show>
     </div>

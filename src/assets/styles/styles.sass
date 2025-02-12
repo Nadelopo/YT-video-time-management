@@ -1,3 +1,4 @@
+
 #owner
   .menu__root
     position: relative
@@ -61,6 +62,26 @@
           margin: 0
       hr
         all: revert
+      .chapters
+        display: grid
+        grid-template-columns: 1fr 1fr
+        gap: 4px
+        .chapter span
+          cursor: pointer
+          transition: .3s
+          position: relative
+          &:hover:not(.active)::after
+            position: absolute
+            content: ''
+            bottom: 0
+            left: 0
+            width: 100%
+            height: 1px
+            background: #fff
+          &.active
+            background: #464646
+            border-radius: 6px
+            padding: 4px
 
 @keyframes menuOpen
   from
@@ -99,49 +120,3 @@
   color: #fff
   &:hover
     background: #1c1c1c
-
-$primary: #fff
-$primary-light: #9A9999
-$gray: #9A9999
-
-.switcher
-  display: flex
-  justify-content: center
-  margin-bottom: 6px
-  .toggle
-    position: relative
-    display: block
-    width: 40px
-    height: 20px
-    cursor: pointer
-    -webkit-tap-highlight-color: transparent
-    transform: translate3d(0,0,0)
-    &:before
-      content: ""
-      position: relative
-      top: 3px
-      left: 3px
-      width: 34px
-      height: 14px
-      display: block
-      background: $gray
-      border-radius: 8px
-      transition: background .2s linear
-    span
-      position: absolute
-      top: 0
-      left: 0
-      width: 20px
-      height: 20px
-      display: block
-      background: white
-      border-radius: 10px
-      box-shadow: 0 3px 8px rgba($gray,.5)
-      transition: all .2s linear
-
-  #cbx:checked + .toggle
-    span
-      background: $primary
-      transform: translateX(20px)
-      transition: all .2s cubic-bezier(.8,.4,.3,1.25) linear
-      box-shadow: 0 3px 8px rgba($primary,.2)

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import Userscript from 'vite-userscript-plugin'
 import solidPlugin from 'vite-plugin-solid'
+import { fileURLToPath, URL } from 'node:url'
 import { name, version, description } from './package.json'
 import { copyFileSync, existsSync, mkdirSync, promises } from 'fs'
 import { resolve } from 'path'
@@ -33,5 +34,21 @@ export default defineConfig({
         port: 3000
       }
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        additionalData: [
+          '@import "./src/assets/styles/variables.sass"'
+        ]
+      }
+    }
+  },
+
+
 })
