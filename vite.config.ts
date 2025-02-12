@@ -3,7 +3,7 @@ import Userscript from 'vite-userscript-plugin'
 import solidPlugin from 'vite-plugin-solid'
 import { fileURLToPath, URL } from 'node:url'
 import { name, version, description } from './package.json'
-import { copyFileSync, existsSync, mkdirSync, promises } from 'fs'
+import { copyFileSync, existsSync, mkdirSync, } from 'fs'
 import { resolve } from 'path'
 
 const sourcePath = resolve(__dirname, 'dist/yt-video-time-management.user.js')
