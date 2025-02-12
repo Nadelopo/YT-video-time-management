@@ -9,7 +9,7 @@ import { ContentTime } from './ContentTime'
 import { timeStore } from './App'
 import { Player, TimeLoopRef, TimeRef } from './types'
 import { convertToSeconds } from '../utils/convertToSeconds'
-import { Switcher } from './Switcher'
+import { Switcher } from './Switcher/Switcher'
 
 type Props = {
   ref: (ref: TimeLoopRef) => void
