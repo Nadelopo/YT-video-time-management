@@ -4,6 +4,11 @@ import { waitElement } from '@zero-dependency/dom'
 import S from './styles.sass?inline'
 
 GM_addStyle(S)
+;(
+  window as unknown as Window & { trustedTypes: any }
+).trustedTypes.createPolicy('default', {
+  createHTML: (string: string) => string
+})
 
 waitElement({ selector: '#owner' }).then((parentContainer) => {
   render(() => <App />, parentContainer)
